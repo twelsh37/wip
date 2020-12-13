@@ -1,2 +1,4 @@
 # wip
-Wort in Progress
+Work in Progress
+
+My first attempt at an app using Dash, components and Pandas.
