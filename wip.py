@@ -1,3 +1,17 @@
+"""Risk and Controls Assesment Dashboard
+### Author - Tom Welsh twelsh37@gmail.com
+
+## Description
+This program is used to read ina  standard set of Risk and Control assesment forms and display various metrics that can
+be gleaned from the data.
+
+The program can also be used as a tool to help clense/sanataise your data. Those annoying humands that substitute '&'
+for 'and' or as a spurious 's's at the end of some standard term from our lexicon
+
+## Deconstruction
+
+"""
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
