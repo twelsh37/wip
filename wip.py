@@ -184,7 +184,7 @@ def set_level3_values(l3_options):
     Input('risk', 'value'),
     Input('level3', 'value')
 )
-def set_display_children(risk_types, risk, level3):
+def return_dropdown_selections(risk_types, risk, level3):
     return 'Taxonomy Level 1 is {}, Taxonomy Level 2 is {} and level 3 is {}'.format(
         risk_types, risk,  level3,
     )
