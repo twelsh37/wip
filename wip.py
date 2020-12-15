@@ -83,6 +83,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP]),\
 #       meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}]
 
+# Level 2 Financial Risks
+l2_fr = ['Credit & Counterparty Risk', 'Insurance Risk', 'Tax and Financial Reporting', 'Liquidity Risk', 'Market Risk']
 
 # Dash layout - max 12 columns per page.
 # 3 columns on Row 1 and two of width 4.
@@ -109,19 +111,22 @@ app.layout = dbc.Container([
     html.Br(),
     dbc.Row([
         dbc.Col([
-            # Taxonomy Level 1 Dropdown List box
-            dcc.Dropdown(id='risk_types', multi=True,
-                         options=[{'label': k, 'value': k} for k in sorted(raca_df['risk_types'].astype(str).unique())],
+            # Taxonomy Level 1 Dropdown List box. # '+[{'label': 'All', 'value': 'All'}] adds alkl option
+            dcc.Dropdown(id='risk_types', multi=False, value = 'Financial Risk',
+                         options=[{'label': k, 'value': k} for k in sorted(raca_df['risk_types'].astype(str).unique())]
+                                 +[{'label': 'All', 'value': 'All'}],
                          placeholder='Select...'),
         ], width=4),
 
         dbc.Col([
             dcc.Dropdown(id='risk', multi=True,
+                         options=[],
                          placeholder='Select...'),
         ], width=4),
 
         dbc.Col([
             dcc.Dropdown(id='level3', multi=True,
+                         options=[],
                          placeholder='Select...'),
         ], width=4),
     ], align='top'),
@@ -149,56 +154,58 @@ fluid=True)
     Output('risk', 'options'),
     Input('risk_types', 'value'))
 def set_tl2_options(tl1_options):
-    return [{'label': i, 'value': i} for i in sorted(raca_df['risk'].astype(str).unique())]
+    print(tl1_options)
+    raca_options = raca_df[raca_df['risk_types' == tl1_options]]
 
+    return [{'label': i, 'value': i} for i in l2_fr]
 
-@app.callback(
-    Output('risk', 'value'),
-    Input('risk', 'options'))
-def set_tl2_value(tl2_options):
-    return tl2_options[0]['value']
-
-
-@app.callback(
-    Output('level3', 'options'),
-    Input('risk', 'value'))
-def set_level3_options(tl3_options):
-    return [{'label': i, 'value': i} for i in sorted(raca_df['level3'].astype(str).unique())]
-
-
-@app.callback(
-    Output('level3', 'value'),
-    Input('level3', 'options'))
-def set_level3_values(l3_options):
-    return l3_options[0]['value']
-
-# Get all the inputs and output them to a sentence
-# This proves we can get values from the dropdowns
-# so we should now be able to pull values to sort
-# dataframes
-
-
-@app.callback(
-    Output('answer', 'children'),
-    Input('risk_types', 'value'),
-    Input('risk', 'value'),
-    Input('level3', 'value')
-)
-def return_dropdown_selections(risk_types, risk, level3):
-    return 'Taxonomy Level 1 is {}, Taxonomy Level 2 is {} and level 3 is {}'.format(
-        risk_types, risk,  level3,
-    )
-
-# Total Number of Risks in whole raca
-#@app.callback(
-#    Output('tnro', 'value'),
-#    Input('tnro','value'))
-def tnro():
-    tnro = raca_df['risk_id'].nunique()
-    print('DEBUG: total number of Risks in Raca {}'.format(tnro,))
-    return 'Total Number of Risks is {}'.format(
-        tnro,
-    )
+# @app.callback(
+#     Output('risk', 'value'),
+#     Input('risk', 'options'))
+# def set_tl2_value(tl2_options):
+#     return tl2_options[0]['value']
+# 
+# 
+# @app.callback(
+#     Output('level3', 'options'),
+#     Input('risk', 'value'))
+# def set_level3_options(tl3_options):
+#     return [{'label': i, 'value': i} for i in sorted(raca_df['level3'].astype(str).unique())]
+# 
+# 
+# @app.callback(
+#     Output('level3', 'value'),
+#     Input('level3', 'options'))
+# def set_level3_values(l3_options):
+#     return l3_options[0]['value']
+# 
+# # Get all the inputs and output them to a sentence
+# # This proves we can get values from the dropdowns
+# # so we should now be able to pull values to sort
+# # dataframes
+# 
+# 
+# @app.callback(
+#     Output('answer', 'children'),
+#     Input('risk_types', 'value'),
+#     Input('risk', 'value'),
+#     Input('level3', 'value')
+# )
+# def return_dropdown_selections(risk_types, risk, level3):
+#     return 'Taxonomy Level 1 is {}, Taxonomy Level 2 is {} and level 3 is {}'.format(
+#         risk_types, risk,  level3,
+#     )
+# 
+# # Total Number of Risks in whole raca
+# #@app.callback(
+# #    Output('tnro', 'value'),
+# #    Input('tnro','value'))
+# def tnro():
+#     tnro = raca_df['risk_id'].nunique()
+#     print('DEBUG: total number of Risks in Raca {}'.format(tnro,))
+#     return 'Total Number of Risks is {}'.format(
+#         tnro,
+#     )
 
 if __name__ == '__main__':
     app.run_server(debug=True)
