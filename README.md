@@ -25,8 +25,8 @@ The Risk Identification level lays out what should be attributed to each drop do
 <table class="ri-table">
     <thead>
         <tr class="ri-firstrow">
-            <th>Risk Types (L1)</th>
-            <th>Risk (L2)</th>
+            <th>Risk Types</th>
+            <th>Risk</th>
             <th>Level 3</th>
         </tr>
     </thead>
