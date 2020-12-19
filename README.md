@@ -5,7 +5,7 @@
 This program is used to read in a standard set of Risk and Control assesment forms and display various metrics that can
 be gleaned from the data.
 
-The program can also be used as a tool to help cleanse/sanataise your data. Those annoying humands that substitute '&'
+The program can also be used as a tool to help cleanse/sanataise your data. Those annoying humans that substitute '&'
 for 'and' or as a spurious 's's at the end of some standard term from our lexicon
 
 ## Deconstruction
@@ -17,8 +17,8 @@ There are several key parts to the Application.
 5. Display the results of our filtered data in a collection of plotly graphs
 
 The Risk Identification level lays out what should be attributed to each drop downlist box on initial filtering.
-<ul>Risk Types (L1) equates to Taxonomy Level 1</ul>
-<ul>Risk (L2) equates to Taxonomy Level 2</ul>
+<ul>Risk Types (L1) equates to Risk Type</ul>
+<ul>Risk (L2) Risk/ul>
 <ul>Level 3 equated to Level 3</ul>
 
 ## Risk Identification Table
