@@ -13,16 +13,18 @@ for 'and' or as a spurious 's's at the end of some standard term from our lexico
 """
 
 import dash
+import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import pandas as pd
+import re
+import plotly.express as px
 
 
 # Read in our RACA raw data files and append them to the initial df dataframe
-#df = pd.read_excel('clensed.xlsx')
-df = pd.read_excel('c:/Users/twelsh/data/racas/clensed.xlsx')
+df = pd.read_excel('clensed.xlsx')
 
 # Rename all column headings to human readable and remove spaces, brackets in description names
 # Take our imported data in df and reassign it with new headers to raca_df.
@@ -59,6 +61,45 @@ raca_df = df.rename(columns={'Process (Title)': 'process_title',
                              'Completion Date': 'completion_date'
                              }
                     )
+# create our function to work through df['risk_id'] and just extract
+# the alpha prefix from the risk_id. E.g 'GMBH-P01-R01' becomes 'GMBH'
+# 'GMBH' is then appended to the list prefix[]
+
+prefix = []
+def business_unit():
+    prefix_search=re.compile(r'^[a-zA-Z]+')
+
+    for value in raca_df['risk_id']:
+        zz = prefix_search.findall(str(value))
+        prefix.append(zz)
+    return prefix
+
+business_unit()
+
+# This takes our list of lists, 'prefix', from the function above and pulls out all its members into one list 'extract'
+extract = [item[0] for item in prefix]
+
+# Insert a new column to hold our business unit and populate it with Business Unit Names
+# We get the byusiness unit names from the 'extract[]' list in the step above
+result = []
+for value in extract:
+    print(value)
+    if value == 'DP':
+        result.append('Data Privacy')
+    elif value == 'AP':
+        result.append('Accounts Payable')
+    elif value == 'BP':
+        result.append('British Petroleum')
+    elif value == 'CP':
+        result.append('Client Profile')
+    else:
+        print(f"Business Unit {value} has not been added to the function yet")
+    #print(f'DEBUG1: Results just in {result}')
+
+print(f"DEBUG-99: Results list:  {result}")
+
+# Apply reuslts to 'business_unit' to create the column in the dataframe
+raca_df['business_unit'] = result
 
 # Reset our index colum so it is contiguous
 raca_df.reset_index(drop=True,
@@ -67,6 +108,8 @@ raca_df.reset_index(drop=True,
 
 # Start the row index at 1 just to make it easier for mortals
 raca_df.index = raca_df.index + 1
+
+
 # -----------------------------------------------------#
 
 # Global variable to hold our data frame olutput from teh dropdown listboxes
@@ -98,14 +141,14 @@ app.layout = dbc.Container([
     html.Br(),
     dbc.Row([
         dbc.Col([
-            html.H3("Taxonomy Level 1", className='text-center text-primary')
-        ], width=4),
+            html.H3("Risk Type",className='text-center text-primary')
+        ], width=3),
         dbc.Col([
-            html.H3("Taxonomy Level 2", className='text-center text-primary')
-        ], width=4),
+            html.H3("Risk", className='text-center text-primary')
+        ], width=3),
         dbc.Col([
             html.H3("Level 3", className='text-center text-primary')
-        ], width=4),
+        ], width=3),
     ], align='center'),
     html.Br(),
     dbc.Row([
@@ -115,40 +158,22 @@ app.layout = dbc.Container([
                          options=[{'label': k, 'value': k} for k in sorted(raca_df['risk_types'].astype(str).unique())]
                                  + [{'label': 'All', 'value': 'All'}],
                          placeholder='Select...'),
-        ], width=4),
+        ], width=3),
 
         dbc.Col([
             dcc.Dropdown(id='risk', multi=False,
                          options=[{'label': k, 'value': k} for k in sorted(raca_df['risk'].astype(str).unique())]
                                  + [{'label': 'All', 'value': 'All'}],
                          placeholder='Select...'),
-        ], width=4),
+        ], width=3),
 
         dbc.Col([
             dcc.Dropdown(id='level3', multi=False,
                          options=[],
                          placeholder='Select...'),
-        ], width=4),
+        ], width=3),
     ], align='top'),
-    html.Br(),
-    dbc.Row([
-        dbc.Col([
-            html.Div(id='answer', className='text-center text-primary')
-        ], width=12),
-    ], align='center'),
-    html.Br(),
-    dbc.Row([
-        dbc.Col([
-            html.Div(id='answer1', className='text-center text-primary')
-        ], width=12),
-    ], align='center'),
-# This styles the container
-],style = {'padding': '50px',
-           'backgroundColor': '#EBEFF0',
-           'textPrimary': '#071633'},
-fluid=True)
-
-
+])
 
 @app.callback(
     Output('risk', 'options'),
@@ -170,53 +195,34 @@ def set_tl3_options(tl2_options):
         raca_options = raca_df
     return [{'label': i, 'value': i} for i in sorted(raca_options['level3'].astype(str).unique())]
 
-# @app.callback(
-#     Output('risk', 'value'),
-#     Input('risk', 'options'))
-# def set_tl2_value(tl2_options):
-#     return tl2_options[0]['value']
-#
-#
-# @app.callback(
-#     Output('level3', 'options'),
-#     Input('risk', 'value'))
-# def set_level3_options(tl3_options):
-#     return [{'label': i, 'value': i} for i in sorted(raca_df['level3'].astype(str).unique())]
-#
-#
-# @app.callback(
-#     Output('level3', 'value'),
-#     Input('level3', 'options'))
-# def set_level3_values(l3_options):
-#     return l3_options[0]['value']
-#
 # # Get all the inputs and output them to a sentence
 # # This proves we can get values from the dropdowns
 # # so we should now be able to pull values to sort
 # # dataframes
 #
 #
-# @app.callback(
-#     Output('answer', 'children'),
-#     Input('risk_types', 'value'),
-#     Input('risk', 'value'),
-#     Input('level3', 'value')
-# )
-# def return_dropdown_selections(risk_types, risk, level3):
-#     return 'Taxonomy Level 1 is {}, Taxonomy Level 2 is {} and level 3 is {}'.format(
-#         risk_types, risk,  level3,
-#     )
-#
-# # Total Number of Risks in whole raca
-# #@app.callback(
-# #    Output('tnro', 'value'),
-# #    Input('tnro','value'))
-# def tnro():
-#     tnro = raca_df['risk_id'].nunique()
-#     print('DEBUG: total number of Risks in Raca {}'.format(tnro,))
-#     return 'Total Number of Risks is {}'.format(
-#         tnro,
-#     )
+@app.callback(
+    Output('answer', 'children'),
+    Input('risk_types', 'value'),
+    Input('risk', 'value'),
+    Input('level3', 'value')
+)
+def return_dropdown_selections(risk_types, risk, level3):
+    return 'Taxonomy Level 1 is {}, Taxonomy Level 2 is {} and level 3 is {}'.format(
+        risk_types, risk,  level3,
+    )
+
+z = 'HELLO MAGGOTS!!!!'
+
+@app.callback(
+    Output('maggot', 'children'),
+    Input('z', 'value'),
+    )
+
+def return_dropdown_selections(risk_types, risk, level3):
+    return 'Taxonomy Level 1 is {}, Taxonomy Level 2 is {} and level 3 is {}'.format(
+        risk_types, risk,  level3,
+    )
 
 if __name__ == '__main__':
     app.run_server(debug=True)
