@@ -5,7 +5,7 @@
 This program is used to read in a standard set of Risk and Control assesment forms and display various metrics that can
 be gleaned from the data.
 
-The program can also be used as a tool to help clense/sanataise your data. Those annoying humands that substitute '&'
+The program can also be used as a tool to help cleanse/sanataise your data. Those annoying humands that substitute '&'
 for 'and' or as a spurious 's's at the end of some standard term from our lexicon
 
 ## Deconstruction
