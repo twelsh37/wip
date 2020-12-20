@@ -57,7 +57,8 @@ raca_df = df.rename(columns={'Process (Title)': 'process_title',
                              'Action Description': 'action_description',
                              'Action Owner': 'action_owner',
                              'Action Due Date': 'action_due_date',
-                             'Completion Date': 'completion_date'
+                             'Completion Date': 'completion_date',
+                             'Action ID': 'action_id'
                              }
                     )
 
@@ -145,6 +146,30 @@ for value in extract:
 # Apply reuslts to 'business_unit' to create the column in the dataframe
 raca_df['business_unit'] = result
 
+# Create a new dataframe to hold our risk id's risk owners, action id, action owners and action due date.
+action_df = raca_df[['action_id',
+                     'risk_id',
+                     'risk_title',
+                     'risk_owner',
+                     'business_unit',
+                     'action_owner',
+                     'action_due_date']]
+
+# Setup some display options if we want to look at our Actions output
+# pd.set_option('display.max_columns', None)
+# pd.set_option('display.max_rows', None)
+
+# Drop all rows in the action_df dataframe who do not have data in all 7 fields
+# Write thgis back out to actiuon_id so we have a dataframe soley for tracking actions
+action_df = action_df.dropna(thresh=7)
+
+# calculate our gross and net risk scores
+# it does this by multiplying the impact and likelihood columns
+# the results are appended to teh df dataframe under columns
+# gross_risk and net_risk respectivly
+raca_df['gross_risk'] = raca_df['gross_impact'] * raca_df['gross_likelihood']
+
+raca_df['net_risk'] = raca_df['net_impact'] * raca_df['net_likelihood']
 
 # Reset our index colum so it is contiguous
 raca_df.reset_index(drop=True,
