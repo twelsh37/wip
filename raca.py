@@ -58,7 +58,8 @@ raca_df = df.rename(columns={'Process (Title)': 'process_title',
                              'Action Description': 'action_description',
                              'Action Owner': 'action_owner',
                              'Action Due Date': 'action_due_date',
-                             'Completion Date': 'completion_date'
+                             'Completion Date': 'completion_date',
+                             'Action ID' : 'action_id'
                              }
                     )
 # create our function to work through df['risk_id'] and just extract
